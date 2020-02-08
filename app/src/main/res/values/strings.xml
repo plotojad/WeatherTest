@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">testApp3</string>
+    <string name="choiceTheCityAndSeason">Выберите город и сезон:</string>
+    <string name="result">Результат:</string>
+    <string name="city">Город:</string>
+    <string name="type">Тип:</string>
+    <string name="season">Сезон:</string>
+    <string name="middleTemp">Средняя температура:</string>
+</resources>

@@ -9,14 +9,14 @@ public interface MainContract {
     }
 
     interface Presenter {
-        void loadCityList();
-        void onCityWasSelected(String name);
+        ArrayList<String> loadCityList();
+        void onCityWasSelected(String name, String season);
         void onDestroy();
     }
 
     interface Repository {
         ArrayList<String> loadCityListNames();
-        Map<String, Object>  loadCityInfo(String name);
+        Map<String, Object>  loadCityInfo(String name, String season);
         void writeCityInfo(String nameCity, String typeCity, String season, int firstMonthTemp, int secondMonthTemp, int thirdMonthTemp);
     }
 }

@@ -6,4 +6,10 @@
     <string name="type">Тип:</string>
     <string name="season">Сезон:</string>
     <string name="middleTemp">Средняя температура:</string>
+    <string name="settings">Настройки</string>
+    <string name="addinfo">Добавить данные</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tempformat">Формат температуры</string>
 </resources>

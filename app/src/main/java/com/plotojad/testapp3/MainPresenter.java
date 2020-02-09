@@ -1,8 +1,14 @@
 package com.plotojad.testapp3;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.Map;
 
 public class MainPresenter implements MainContract.Presenter {
+
+    final String TAG = "myLog";
 
     private MainContract.View mView;
     private MainContract.Repository mRepository;
@@ -19,19 +25,20 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void loadCityList() {
-
+    public ArrayList<String> loadCityList() {
+        return mRepository.loadCityListNames();
     }
 
     @Override
-    public void onCityWasSelected(String name) {
-        cityInfoMap = mRepository.loadCityInfo(name);
-        this.name = (String) cityInfoMap.get("name");
+    public void onCityWasSelected(String name, String season) {
+        cityInfoMap = mRepository.loadCityInfo(name, season);
+        this.name = name;
         this.type = (String) cityInfoMap.get("type");
-        this.season = (String) cityInfoMap.get("season");
+        this.season = season;
         this.middleTemp = meanCalculate((int)cityInfoMap.get("firstTemp"),
                 (int)cityInfoMap.get("secondTemp"),
                 (int)cityInfoMap.get("thirdTemp"));
+        mView.showResult(this.name, this.type, this.season, this.middleTemp);
     }
 
     @Override
@@ -39,10 +46,12 @@ public class MainPresenter implements MainContract.Presenter {
 
     }
 
+    @SuppressLint("DefaultLocale")
     private String meanCalculate(int first, int second, int third) {
         String middlet;
-        float mean = (first + second + third) / 3;
-        middlet = String.valueOf(mean);
+        float mean = (first + second + third) / 3.0f;
+        Log.d(TAG, "double: " + mean);
+        middlet = String.format("%.1f", mean);
         return middlet;
     }
 }

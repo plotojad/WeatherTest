@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.plotojad.testapp3.dialogs.AddInfoDialogFragment;
 import com.plotojad.testapp3.dialogs.SettingsDialogFragment;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     ArrayList<String> cities = new ArrayList<>();
 
     SettingsDialogFragment mSettingsDialogFragment;
+    AddInfoDialogFragment mAddInfoDialogFragment;
 
     boolean isSlected = false;
     String cityName;
@@ -41,7 +43,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSettingsDialogFragment = new SettingsDialogFragment();
-        mPresenter = new MainPresenter(this);
+        mAddInfoDialogFragment = new AddInfoDialogFragment(this);
+        mPresenter = new MainPresenter(this, getBaseContext());
         cities = mPresenter.loadCityList();
         spinnCity = findViewById(R.id.spinnCity);
         spinnSeason = findViewById(R.id.spinnSeason);
@@ -50,47 +53,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         tvSeason = findViewById(R.id.tvSeason);
         tvTemp = findViewById(R.id.tvTemp);
 
-        adapterCityList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cities);
-        adapterCityList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnCity.setAdapter(adapterCityList);
-        spinnCity.setPrompt("Выберите город:");
-        spinnCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                cityName = adapterView.getItemAtPosition(i).toString();
-                if (isSlected && seasonName != null) {
-                    mPresenter.onCityWasSelected(cityName, seasonName);
-                }
-                isSlected = true;
-            }
+        if (cities == null){
+//            Toast.makeText(this, getResources().getString(R.string.addDataAlert), Toast.LENGTH_LONG).show();
+            mAddInfoDialogFragment.show(getSupportFragmentManager(), mAddInfoDialogFragment.getClass().getName());
+//            return;
+        } else {
+            initAdapters();
+        }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        adapterSeasonList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
-        adapterSeasonList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnSeason.setAdapter(adapterSeasonList);
-        spinnSeason.setPrompt("Выберите сезон:");
-//        spinnSeason.setEnabled(false);
-        spinnSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                seasonName = adapterView.getItemAtPosition(i).toString();
-                if (isSlected && cityName != null) {
-                    mPresenter.onCityWasSelected(cityName, seasonName);
-                }
-                isSlected = true;
-                Log.d(TAG, "Season name: " + seasonName);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Toast.makeText(getBaseContext(), "выберите сезон!", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -99,6 +69,61 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         tvType.setText(typeCity);
         tvSeason.setText(season);
         tvTemp.setText(midTemp);
+    }
+
+    @Override
+    public void initAdapters() {
+        if (cities != null) {
+            adapterCityList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cities);
+            adapterCityList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnCity.setAdapter(adapterCityList);
+            spinnCity.setPrompt("Выберите город:");
+            spinnCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    cityName = adapterView.getItemAtPosition(i).toString();
+                    if (isSlected && seasonName != null) {
+                        mPresenter.onCityWasSelected(cityName, seasonName);
+                    }
+                    isSlected = true;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
+            adapterSeasonList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
+            adapterSeasonList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnSeason.setAdapter(adapterSeasonList);
+            spinnSeason.setPrompt("Выберите сезон:");
+            spinnSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    seasonName = adapterView.getItemAtPosition(i).toString();
+                    if (isSlected && cityName != null) {
+                        mPresenter.onCityWasSelected(cityName, seasonName);
+                    }
+                    isSlected = true;
+                    Log.d(TAG, "Season name: " + seasonName);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    Toast.makeText(getBaseContext(), "выберите сезон!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            cities = mPresenter.loadCityList();
+        }
+    }
+
+    @Override
+    public void updateAdapters() {
+        if (adapterCityList != null) {
+            adapterCityList.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -112,18 +137,22 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         switch (item.getItemId()) {
             case R.id.itemSettings:
                 mSettingsDialogFragment.show(getSupportFragmentManager(), mSettingsDialogFragment.getClass().getName());
-                Toast.makeText(getBaseContext(), "Settings selected", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.itemAddInfo:
-                Toast.makeText(getBaseContext(), "AddInfo selected", Toast.LENGTH_SHORT).show();
+                mAddInfoDialogFragment.show(getSupportFragmentManager(), mAddInfoDialogFragment.getClass().getName());
                 break;
         }
         return true;
     }
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.onDestroy();
+        mPresenter = null;
+        mSettingsDialogFragment = null;
+        mAddInfoDialogFragment = null;
     }
 }

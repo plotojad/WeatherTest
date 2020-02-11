@@ -39,4 +39,5 @@
     <string name="enterTheInfoToast">Заполните все поля</string>
     <string name="cityIsAdded">Информация добавлена</string>
     <string name="addDataAlert">Добавьте данные</string>
+    <string name="selectbtn">Выбрать</string>
 </resources>

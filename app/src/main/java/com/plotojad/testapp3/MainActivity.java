@@ -3,8 +3,9 @@ package com.plotojad.testapp3;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +22,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View {
 
-    final String TAG = "myLog";
+    SharedPreferences sharedPreferences;
+    private final String KEY_FORMAT = "keyTFormat";
+    private final String NAME_SETTINGS = "mSettings";
 
     private MainContract.Presenter mPresenter;
     private Spinner spinnCity, spinnSeason;
@@ -53,14 +56,48 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         tvSeason = findViewById(R.id.tvSeason);
         tvTemp = findViewById(R.id.tvTemp);
 
-        if (cities == null){
-//            Toast.makeText(this, getResources().getString(R.string.addDataAlert), Toast.LENGTH_LONG).show();
+        adapterSeasonList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
+        adapterSeasonList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnSeason.setAdapter(adapterSeasonList);
+        spinnSeason.setPrompt("Выберите сезон:");
+        spinnSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                seasonName = adapterView.getItemAtPosition(i).toString();
+                if (isSlected && cityName != null) {
+                    mPresenter.onCityWasSelected(cityName, seasonName);
+                }
+                isSlected = true;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Toast.makeText(getBaseContext(), "выберите сезон!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if (cities == null) {
+            sharedPreferences = this.getSharedPreferences(NAME_SETTINGS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor sEd = sharedPreferences.edit();
+            sEd.putString(KEY_FORMAT, spinnSeason.getSelectedItem().toString());
+            sEd.apply();
             mAddInfoDialogFragment.show(getSupportFragmentManager(), mAddInfoDialogFragment.getClass().getName());
-//            return;
         } else {
-            initAdapters();
+            initCityAdapter();
         }
 
+    }
+
+    public Spinner getSpinnCity() {
+        return spinnCity;
+    }
+
+    public Spinner getSpinnSeason() {
+        return spinnSeason;
+    }
+
+    public MainContract.Presenter getmPresenter() {
+        return mPresenter;
     }
 
     @Override
@@ -72,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void initAdapters() {
+    public void initCityAdapter() {
         if (cities != null) {
             adapterCityList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cities);
             adapterCityList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -94,26 +131,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 }
             });
 
-            adapterSeasonList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
-            adapterSeasonList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnSeason.setAdapter(adapterSeasonList);
-            spinnSeason.setPrompt("Выберите сезон:");
-            spinnSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    seasonName = adapterView.getItemAtPosition(i).toString();
-                    if (isSlected && cityName != null) {
-                        mPresenter.onCityWasSelected(cityName, seasonName);
-                    }
-                    isSlected = true;
-                    Log.d(TAG, "Season name: " + seasonName);
-                }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    Toast.makeText(getBaseContext(), "выберите сезон!", Toast.LENGTH_SHORT).show();
-                }
-            });
         } else {
             cities = mPresenter.loadCityList();
         }
@@ -122,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void updateAdapters() {
         if (adapterCityList != null) {
+            adapterCityList.clear();
+            adapterCityList.addAll(mPresenter.loadCityList());
             adapterCityList.notifyDataSetChanged();
         }
     }
@@ -145,14 +165,18 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         return true;
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mPresenter.onDestroy();
         mPresenter = null;
         mSettingsDialogFragment = null;
         mAddInfoDialogFragment = null;
+        super.onDestroy();
     }
 }

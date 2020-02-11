@@ -19,6 +19,17 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="36dp"/>
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/selectbtn"
+        android:textColor="@color/colorPrimaryDark"
+        android:background="@android:color/holo_orange_light"
+        android:textSize="12sp"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

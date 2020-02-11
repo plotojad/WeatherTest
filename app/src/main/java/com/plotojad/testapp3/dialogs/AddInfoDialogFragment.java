@@ -1,6 +1,9 @@
 package com.plotojad.testapp3.dialogs;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +28,16 @@ import java.util.Map;
 
 public class AddInfoDialogFragment extends DialogFragment {
 
+    private final String KEY_FORMAT = "keyTFormat";
+    private final String NAME_SETTINGS = "mSettings";
+    private final String KEY_C = "Цельсий";
+    private final String KEY_F = "Фаренгейт";
+    private final String KEY_K = "Кельвин";
+
     private MainContract.Presenter mPresenter;
     private MainContract.View mView;
+
+    private SharedPreferences sharedPreferences;
 
     private Spinner spinnTypeAdd;
     private EditText etCityNameAdd, etDecTempAdd, etJanTempAdd, etFebTempAdd, etMarTempAdd, etAprTempAdd,
@@ -49,6 +60,9 @@ public class AddInfoDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.addinfodialog, null);
+
+        sharedPreferences = getContext().getSharedPreferences(NAME_SETTINGS, Context.MODE_PRIVATE);
+
         spinnTypeAdd = v.findViewById(R.id.spinnTypeAdd);
         etCityNameAdd = v.findViewById(R.id.etCityNameAdd);
         etDecTempAdd = v.findViewById(R.id.etDecTempAdd);
@@ -222,6 +236,35 @@ public class AddInfoDialogFragment extends DialogFragment {
             }
         });
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String hint = "";
+        switch (sharedPreferences.getString(KEY_FORMAT, "")) {
+            case KEY_C:
+                hint = "°C";
+                break;
+            case KEY_F:
+                hint = "°F";
+                break;
+            case KEY_K:
+                hint = "°K";
+                break;
+        }
+        etDecTempAdd.setHint(hint);
+        etJanTempAdd.setHint(hint);
+        etFebTempAdd.setHint(hint);
+        etMarTempAdd.setHint(hint);
+        etAprTempAdd.setHint(hint);
+        etMayTempAdd.setHint(hint);
+        etJunTempAdd.setHint(hint);
+        etJulTempAdd.setHint(hint);
+        etAugTempAdd.setHint(hint);
+        etSeptTempAdd.setHint(hint);
+        etOctTempAdd.setHint(hint);
+        etNovTempAdd.setHint(hint);
     }
 
     @Override

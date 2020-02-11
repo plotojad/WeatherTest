@@ -26,8 +26,8 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table " + TABLE_NAME + "(" + KEY_ID + " integer primary key, " + KEY_NAME
-        + " text, " + KEY_TYPE + " text, " + KEY_WIN + " real, " + KEY_SPR + " real, " + KEY_SUM + " real, "
-        + KEY_AUT + " real)");
+                + " text, " + KEY_TYPE + " text, " + KEY_WIN + " real, " + KEY_SPR + " real, " + KEY_SUM + " real, "
+                + KEY_AUT + " real)");
     }
 
     @Override

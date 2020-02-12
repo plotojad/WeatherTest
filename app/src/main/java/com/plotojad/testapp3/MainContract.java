@@ -10,7 +10,7 @@ public interface MainContract {
     interface View {
         void showResult(String nameCity, String typeCity, String season, String midTemp);
 
-        void initCityAdapter();
+        void initAdapters();
 
         void updateAdapters();
     }

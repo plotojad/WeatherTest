@@ -1,6 +1,5 @@
 package com.plotojad.testapp3.dialogs;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -294,5 +293,7 @@ public class AddInfoDialogFragment extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        spinnTypeAdd = null;
+        btAddInfo = null;
     }
 }

@@ -56,34 +56,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         tvSeason = findViewById(R.id.tvSeason);
         tvTemp = findViewById(R.id.tvTemp);
 
-        adapterSeasonList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
-        adapterSeasonList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnSeason.setAdapter(adapterSeasonList);
-        spinnSeason.setPrompt("Выберите сезон:");
-        spinnSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                seasonName = adapterView.getItemAtPosition(i).toString();
-                if (isSlected && cityName != null) {
-                    mPresenter.onCityWasSelected(cityName, seasonName);
-                }
-                isSlected = true;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Toast.makeText(getBaseContext(), "выберите сезон!", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         if (cities == null) {
             sharedPreferences = this.getSharedPreferences(NAME_SETTINGS, Context.MODE_PRIVATE);
             SharedPreferences.Editor sEd = sharedPreferences.edit();
-            sEd.putString(KEY_FORMAT, spinnSeason.getSelectedItem().toString());
+            sEd.putString(KEY_FORMAT, "Цельсий");
             sEd.apply();
             mAddInfoDialogFragment.show(getSupportFragmentManager(), mAddInfoDialogFragment.getClass().getName());
         } else {
-            initCityAdapter();
+            initAdapters();
         }
 
     }
@@ -109,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void initCityAdapter() {
+    public void initAdapters() {
         if (cities != null) {
             adapterCityList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cities);
             adapterCityList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -131,9 +112,31 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 }
             });
 
+            adapterSeasonList = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, seasons);
+            adapterSeasonList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnSeason.setAdapter(adapterSeasonList);
+            spinnSeason.setPrompt("Выберите сезон:");
+            spinnSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    seasonName = adapterView.getItemAtPosition(i).toString();
+                    if (isSlected && cityName != null) {
+                        mPresenter.onCityWasSelected(cityName, seasonName);
+                    }
+                    isSlected = true;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    Toast.makeText(getBaseContext(), "выберите сезон!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
         } else {
             cities = mPresenter.loadCityList();
+            initAdapters();
+            updateAdapters();
         }
     }
 

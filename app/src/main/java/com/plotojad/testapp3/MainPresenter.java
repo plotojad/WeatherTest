@@ -12,13 +12,11 @@ public class MainPresenter implements MainContract.Presenter {
 
     private final String KEY_FORMAT = "keyTFormat";
     private final String NAME_SETTINGS = "mSettings";
-    private final String KEY_C = "Цельсий";
     private final int KEY_ADD_CONVERT = 0;
     private final int KEY_SHOW_CONVERT = 1;
     private SharedPreferences sharedPreferences;
     private MainContract.View mView;
     private MainContract.Repository mRepository;
-    Context context;
 
     private String name;
     private String type;
@@ -29,7 +27,6 @@ public class MainPresenter implements MainContract.Presenter {
     public MainPresenter(MainContract.View mView, Context context) {
         this.mView = mView;
         this.mRepository = MainRepository.getInstance();
-        this.context = context;
         mRepository.init(context);
         sharedPreferences = context.getSharedPreferences(NAME_SETTINGS, Context.MODE_PRIVATE);
     }
@@ -41,7 +38,6 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void addInfo(Map<String, String> data) {
-//        sharedPreferences = context.getSharedPreferences(NAME_SETTINGS, Context.MODE_PRIVATE);
         if (data != null) {
             String name = data.get("name");
             String type = data.get("type");
@@ -66,7 +62,7 @@ public class MainPresenter implements MainContract.Presenter {
                     converterTemp(springT, KEY_ADD_CONVERT),
                     converterTemp(summerT, KEY_ADD_CONVERT),
                     converterTemp(autumnT, KEY_ADD_CONVERT));
-            mView.initCityAdapter();
+            mView.initAdapters();
             mView.updateAdapters();
         }
     }
@@ -140,23 +136,10 @@ public class MainPresenter implements MainContract.Presenter {
                         conversTemp = (argt - 32.0f) / 1.8f;
                         break;
                     case "Кельвин":
-                        conversTemp = (argt - 32.0f) / 1.8f + 273.15f;
+                        conversTemp = argt - 273.15f;
                         break;
                 }
                 break;
-//            case KEY_K:
-//                switch (sharedPreferences.getString(KEY_FORMAT, "")) {
-//                    case "Цельсий":
-//                        conversTemp = argt - 273.15f;
-//                        break;
-//                    case "Фаренгейт":
-//                        conversTemp = (argt - 273.15f) * 1.8f + 32;
-//                        break;
-//                    case "Кельвин":
-//                        conversTemp = argt;
-//                        break;
-//                }
-//                break;
         }
         return conversTemp;
     }
